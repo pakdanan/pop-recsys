@@ -6,7 +6,7 @@ import seaborn as sns
 # Load preprocessed and cleaned data
 @st.cache
 def load_data():
-    return pd.read_pickle('popular_movies_with_genres_cleaned.pkl')
+    return pd.read_pickle('popular_movies.pkl')
 
 # Load data
 sorted_movies = load_data()
