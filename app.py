@@ -55,7 +55,7 @@ filtered_movies = sorted_movies[
 ].head(top_n)
 
 # Display movies in grid format
-st.subheader(f"Top {top_n} Popular Recommendation Movies ( Based on IMDb Weighted Rating )")
+st.subheader(f"Top {top_n} Movies ( Based on IMDb Weighted Rating )")
 cols_per_row = 3  # Number of columns per row
 rows = [filtered_movies.iloc[i:i + cols_per_row] for i in range(0, len(filtered_movies), cols_per_row)]
 
