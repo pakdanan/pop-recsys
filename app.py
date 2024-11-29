@@ -36,12 +36,6 @@ all_genres = sorted_movies['genres'].str.split('|').explode().unique()
 # Sidebar filters
 st.sidebar.header("Filters")
 selected_genres = st.sidebar.multiselect("Select Genres", all_genres, default=all_genres)
-min_ratings = st.sidebar.slider(
-    "Minimum Ratings", 
-    int(sorted_movies['num_ratings'].min()), 
-    int(sorted_movies['num_ratings'].max()), 
-    int(sorted_movies['num_ratings'].quantile(0.9))
-)
 top_n = st.sidebar.slider("Number of Movies to Display", 5, 12, 9)
 
 # Filter by genres
@@ -49,10 +43,7 @@ def filter_by_genre(row, genres):
     movie_genres = row['genres'].split('|')
     return any(genre in genres for genre in movie_genres)
 
-filtered_movies = sorted_movies[
-    sorted_movies.apply(filter_by_genre, genres=selected_genres, axis=1) &
-    (sorted_movies['num_ratings'] >= min_ratings)
-].head(top_n)
+filtered_movies = sorted_movies[sorted_movies.apply(filter_by_genre, genres=selected_genres, axis=1)].head(top_n)
 
 # Display movies in grid format
 st.subheader(f"Top {top_n} Movies ( Based on IMDb Weighted Rating )")
