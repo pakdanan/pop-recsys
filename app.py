@@ -35,7 +35,7 @@ all_genres = sorted_movies['genres'].str.split('|').explode().unique()
 
 # Streamlit UI
 st.title("Popular Movies Recommender System")
-st.markdown("### Based on IMDb Weighted Rating (Cleaned and Precomputed)")
+st.markdown("( Based on IMDb Weighted Rating )")
 
 # Sidebar filters
 st.sidebar.header("Filters")
@@ -46,7 +46,7 @@ min_ratings = st.sidebar.slider(
     int(sorted_movies['num_ratings'].max()), 
     int(sorted_movies['num_ratings'].quantile(0.9))
 )
-top_n = st.sidebar.slider("Number of Movies to Display", 5, 20, 10)
+top_n = st.sidebar.slider("Number of Movies to Display", 5, 12, 9)
 
 # Filter by genres
 def filter_by_genre(row, genres):
@@ -58,23 +58,22 @@ filtered_movies = sorted_movies[
     (sorted_movies['num_ratings'] >= min_ratings)
 ].head(top_n)
 
-# Display top movies with posters
-st.subheader(f"Top {top_n} Movies (Min Ratings: {min_ratings}, Genres: {', '.join(selected_genres)})")
-for _, row in filtered_movies.iterrows():
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        # Fetch and display poster
-        poster_url = fetch_poster_url(row['tmdbId'])
-        if poster_url:
-            st.image(poster_url, width=100)
-        else:
-            st.image("https://via.placeholder.com/100?text=No+Image", width=100)
-    with col2:
-        st.write(f"**{row['title']}**")
-        st.write(f"Genres: {row['genres']}")
-        st.write(f"Number of Ratings: {row['num_ratings']}")
-        st.write(f"Average Rating: {row['avg_rating']:.2f}")
-        st.write(f"Weighted Rating: {row['weighted_rating']:.2f}")
+# Display movies in grid format
+st.subheader(f"Top {top_n} Movies")
+cols_per_row = 3  # Number of columns per row
+rows = [filtered_movies.iloc[i:i + cols_per_row] for i in range(0, len(filtered_movies), cols_per_row)]
+
+for row in rows:
+    columns = st.columns(cols_per_row)
+    for col, (_, movie) in zip(columns, row.iterrows()):
+        poster_url = fetch_poster_url(movie['tmdbId'])
+        with col:
+            if poster_url:
+                st.image(poster_url, width=150)
+            else:
+                st.image("https://via.placeholder.com/150?text=No+Image", width=150)
+            st.caption(movie['title'])
+
 
 # Visualization
 st.subheader("Top Movies Visualization")
